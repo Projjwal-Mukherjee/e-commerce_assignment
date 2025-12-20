@@ -72,7 +72,7 @@ export default function Home() {
 									{product.image ? (
 										<img
 											src={product.image}
-											alt={product.name}
+											alt={product.name + " - No Image"}
 											className='w-full h-56 object-cover border-b border-gray-200'
 										/>
 									) : (
