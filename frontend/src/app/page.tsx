@@ -1,65 +1,115 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getProducts } from "@/lib/api";
+import { useCart } from "@/store/cart";
+import Link from "next/link";
 
 export default function Home() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+	const [products, setProducts] = useState<any[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	// Reactive cart
+	const addItem = useCart((state) => state.addItem);
+	const cartCount = useCart((state) => state.getCount());
+
+	useEffect(() => {
+		getProducts()
+			.then((res) => {
+				console.log("✅ Products loaded:", res.data); // ← Add this
+				setProducts(res.data);
+			})
+			.catch((err) => console.error("Failed to load products:", err))
+			.finally(() => setLoading(false));
+		console.log(products);
+	}, []);
+
+	if (loading) {
+		return (
+			<div className='p-8 text-center text-gray-700'>Loading products...</div>
+		);
+	}
+
+	return (
+		<div className='min-h-screen bg-gray-50'>
+			{/* Header */}
+			<header className='bg-white shadow-sm border-b border-gray-200'>
+				<div className='max-w-7xl mx-auto px-6 py-5 flex justify-between items-center'>
+					<h1 className='text-3xl font-bold text-gray-900'>E-Commerce Store</h1>
+					<Link
+						href='/checkout'
+						className='relative bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg transition'
+					>
+						Checkout
+						{cartCount > 0 && (
+							<span className='absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center'>
+								{cartCount}
+							</span>
+						)}
+					</Link>
+				</div>
+			</header>
+
+			{/* Main Content */}
+			<main className='max-w-7xl mx-auto px-6 py-10'>
+				<h2 className='text-2xl font-semibold text-gray-800 mb-8'>
+					Available Products
+				</h2>
+
+				{products.length === 0 ? (
+					<p className='text-center text-gray-600 py-12'>
+						No products available at the moment.
+					</p>
+				) : (
+					<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
+						{products.map((product) => (
+							<div
+								key={product.id}
+								className='bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden'
+							>
+								{/* Image Placeholder */}
+								<div className='h-56 bg-gray-200 flex items-center justify-center border-b border-gray-200'>
+									{product.image ? (
+										<img
+											src={product.image}
+											alt={product.name}
+											className='w-full h-56 object-cover border-b border-gray-200'
+										/>
+									) : (
+										<div className='h-56 bg-gray-200 flex items-center justify-center border-b border-gray-200'>
+											<span className='text-gray-500'>No Image</span>
+										</div>
+									)}
+								</div>
+
+								{/* Card Body */}
+								<div className='p-6'>
+									<h3 className='text-xl font-semibold text-gray-900 mb-2'>
+										{product.name}
+									</h3>
+									<p className='text-gray-600 text-sm mb-4 line-clamp-2'>
+										{product.description || "No description available"}
+									</p>
+									<div className='flex justify-between items-end mb-6'>
+										<span className='text-2xl font-bold text-green-600'>
+											${Number(product.price).toFixed(2)}
+										</span>
+										<span className='text-sm text-gray-500'>
+											Stock: {product.stock ?? "N/A"}
+										</span>
+									</div>
+									<button
+										onClick={() => addItem(product)}
+										className='w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition'
+									>
+										Add to Cart
+									</button>
+								</div>
+							</div>
+						))}
+					</div>
+				)}
+			</main>
+		</div>
+	);
 }

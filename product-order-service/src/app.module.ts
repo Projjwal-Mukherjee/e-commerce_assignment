@@ -1,31 +1,33 @@
-// src/app.module.ts
+// src/app.module.ts (product-order-service)
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConfigAppModule } from './config/config.module';
-
-import { ProductOrderModule } from './product-order.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProductsModule } from './products/products.module';
+import { OrdersModule } from './orders/orders.module';
 
 @Module({
   imports: [
-    ConfigAppModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env', // Explicitly load .env
+    }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, ProductOrderModule],
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('database.host'),
-        port: configService.get('database.port'),
-        username: configService.get('database.username'),
-        password: configService.get('database.password'),
-        database: configService.get('database.database'),
+        host: configService.get<string>('POSTGRES_HOST', 'localhost'),
+        port: configService.get<number>('POSTGRES_PORT', 5432),
+        username: configService.get<string>('POSTGRES_USER', 'postgres'),
+        password: configService.get<string>('POSTGRES_PASSWORD', 'password'), // Critical: default string
+        database: configService.get<string>('POSTGRES_DB', 'products_db'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: false, // We'll use migrations later
+        synchronize: false,
         logging: true,
       }),
       inject: [ConfigService],
     }),
+    ProductsModule,
+    OrdersModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

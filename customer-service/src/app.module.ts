@@ -1,31 +1,31 @@
-// src/app.module.ts
+// src/app.module.ts (customer-service)
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConfigAppModule } from './config/config.module';
-
-import { CustomerModule } from './customer.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CustomersModule } from './customers/customers.module';
 
 @Module({
   imports: [
-    ConfigAppModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule, CustomerModule],
+      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('database.host'),
-        port: configService.get('database.port'),
-        username: configService.get('database.username'),
-        password: configService.get('database.password'),
-        database: configService.get('database.database'),
+        host: configService.get<string>('POSTGRES_HOST', 'localhost'),
+        port: configService.get<number>('POSTGRES_PORT', 5433),
+        username: configService.get<string>('POSTGRES_USER', 'postgres'),
+        password: configService.get<string>('POSTGRES_PASSWORD', 'password'),
+        database: configService.get<string>('POSTGRES_DB', 'customers_db'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: false, // We'll use migrations later
+        synchronize: false,
         logging: true,
       }),
       inject: [ConfigService],
     }),
+    CustomersModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}

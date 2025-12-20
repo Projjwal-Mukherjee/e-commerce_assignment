@@ -17,4 +17,7 @@ export class Product {
 
   @Column({ default: 10 })
   stock: number;
+
+  @Column({ nullable: true })
+  image: string;
 }
