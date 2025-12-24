@@ -21,7 +21,7 @@ type CartStore = {
 	total: () => number;
 	getCount: () => number;
 };
-
+// Zustand store for cart management
 export const useCart = create<CartStore>((set, get) => ({
 	items: [],
 	addItem: (product) =>

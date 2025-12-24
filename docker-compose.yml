@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: products_db
     ports:
-      - "5432:5432"
+      - "5432:5432" # Host port 5432 → product-order-service uses this
     volumes:
       - postgres-products-data:/var/lib/postgresql/data
 
@@ -18,7 +18,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: customers_db
     ports:
-      - "5433:5432"
+      - "5433:5432" # Host port 5433 → customer-service uses this
     volumes:
       - postgres-customers-data:/var/lib/postgresql/data
 
@@ -31,3 +31,7 @@ services:
 volumes:
   postgres-products-data:
   postgres-customers-data:
+#Each microservice has its own isolated DB (products_db and customers_db)
+#RabbitMQ is used for inter-service communication
+#Ports are mapped to avoid conflicts and allow services to connect properly
+#Data persistence is ensured through Docker volumes

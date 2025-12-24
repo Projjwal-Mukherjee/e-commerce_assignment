@@ -1,7 +1,7 @@
 // src/config/configuration.ts
 
 export default () => ({
-  port: parseInt(process.env.PORT ?? '3000', 10),
+  port: parseInt(process.env.PORT ?? '3001', 10),
 
   database: {
     host: process.env.POSTGRES_HOST ?? 'localhost',

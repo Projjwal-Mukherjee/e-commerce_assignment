@@ -30,7 +30,7 @@ export default function Orders() {
 
 		customerApi
 			.get<CustomerOrder[]>(
-				`/customers/orders?email=${encodeURIComponent(email)}`
+				`/customers/orders?email=${encodeURIComponent(email)}` // Fetch orders for a specific customer
 			)
 			.then((res) => setOrders(res.data))
 			.catch((err) => {

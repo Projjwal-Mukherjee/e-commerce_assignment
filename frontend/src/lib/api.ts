@@ -12,9 +12,9 @@ export const customerApi = axios.create({
 });
 
 // Helper functions
-export const getProducts = () => productApi.get("/products");
+export const getProducts = () => productApi.get("/products"); // Fetch all products
 
-export const createOrder = (data: any) => productApi.post("/orders", data);
+export const createOrder = (data: any) => productApi.post("/orders", data); // Create a new order
 
 export const getCustomerOrders = (email: string) =>
-	customerApi.get(`/customers/orders?email=${encodeURIComponent(email)}`);
+	customerApi.get(`/customers/orders?email=${encodeURIComponent(email)}`); // Fetch orders for a specific customer

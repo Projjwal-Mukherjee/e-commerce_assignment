@@ -10,6 +10,6 @@ import { CustomersController } from './customers.controller';
 @Module({
   imports: [TypeOrmModule.forFeature([Customer, CustomerOrder])],
   providers: [CustomersService],
-  controllers: [CustomersEventController, CustomersController], // This is key!
+  controllers: [CustomersEventController, CustomersController],
 })
 export class CustomersModule {}
